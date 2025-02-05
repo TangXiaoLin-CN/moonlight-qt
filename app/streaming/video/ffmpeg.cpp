@@ -788,7 +788,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
         if (m_VideoDecoderCtx != nullptr) {
             ret = snprintf(&output[offset],
                            length - offset,
-                           "Video stream: %dx%d %.2f FPS (Codec: %s)\n",
+                           "视频流: %dx%d %.2f FPS (Codec: %s)  ",
                            m_VideoDecoderCtx->width,
                            m_VideoDecoderCtx->height,
                            stats.totalFps,
@@ -803,9 +803,10 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
 
         ret = snprintf(&output[offset],
                        length - offset,
-                       "Incoming frame rate from network: %.2f FPS\n"
-                       "Decoding frame rate: %.2f FPS\n"
-                       "Rendering frame rate: %.2f FPS\n",
+                       // "Incoming frame rate from network: %.2f FPS\n"
+                       // "Decoding frame rate: %.2f FPS\n"
+                       // "Rendering frame rate: %.2f FPS\n",
+                       "帧率: 接收/解码/渲染 %.2f/%.2f/%.2f FPS\n",
                        stats.receivedFps,
                        stats.decodedFps,
                        stats.renderedFps);
@@ -820,7 +821,8 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
     if (stats.framesWithHostProcessingLatency > 0) {
         ret = snprintf(&output[offset],
                        length - offset,
-                       "Host processing latency min/max/average: %.1f/%.1f/%.1f ms\n",
+                       // "Host processing latency min/max/average: %.1f/%.1f/%.1f ms\n",
+                       "主机编码: 最小 %.1f/最大 %.1f/平均 %.1f ms  ",
                        (float)stats.minHostProcessingLatency / 10,
                        (float)stats.maxHostProcessingLatency / 10,
                        (float)stats.totalHostProcessingLatency / 10 / stats.framesWithHostProcessingLatency);
@@ -836,7 +838,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
         char rttString[32];
 
         if (stats.lastRtt != 0) {
-            snprintf(rttString, sizeof(rttString), "%u ms (variance: %u ms)", stats.lastRtt, stats.lastRttVariance);
+            snprintf(rttString, sizeof(rttString), "%u ms (波动: %u ms)", stats.lastRtt, stats.lastRttVariance);//variance
         }
         else {
             snprintf(rttString, sizeof(rttString), "N/A");
@@ -844,15 +846,17 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
 
         ret = snprintf(&output[offset],
                        length - offset,
-                       "Frames dropped by your network connection: %.2f%%\n"
-                       "Frames dropped due to network jitter: %.2f%%\n"
-                       "Average network latency: %s\n"
-                       "Average decoding time: %.2f ms\n"
-                       "Average frame queue delay: %.2f ms\n"
-                       "Average rendering time (including monitor V-sync latency): %.2f ms\n",
+                       // "Frames dropped by your network connection: %.2f%%\n"
+                       // "Frames dropped due to network jitter: %.2f%%\n"
+                       // "Average network latency: %s\n"
+                       // "Average decoding time: %.2f ms\n"
+                       // "Average frame queue delay: %.2f ms\n"
+                       // "Average rendering time (including monitor V-sync latency): %.2f ms\n",
+                       "网络延迟: %s  丢包率：%.2f%%  抖动：%.2f%%\n"
+                       "解码延迟：%.2f ms  帧队列延迟: %.2f ms  平均渲染时间 (含垂直同步): %.2f ms\n",
+                       rttString,
                        (float)stats.networkDroppedFrames / stats.totalFrames * 100,
                        (float)stats.pacerDroppedFrames / stats.decodedFrames * 100,
-                       rttString,
                        (float)stats.totalDecodeTime / stats.decodedFrames,
                        (float)stats.totalPacerTime / stats.renderedFrames,
                        (float)stats.totalRenderTime / stats.renderedFrames);

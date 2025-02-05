@@ -5,11 +5,12 @@ using namespace Overlay;
 
 OverlayManager::OverlayManager() :
     m_Renderer(nullptr),
-    m_FontData(Path::readDataFile("ModeSeven.ttf"))
+    m_FontData(Path::readDataFile("OPPOSans-H.ttf"))
 {
     memset(m_Overlays, 0, sizeof(m_Overlays));
 
-    m_Overlays[OverlayType::OverlayDebug].color = {0xD0, 0xD0, 0x00, 0xFF};
+    // m_Overlays[OverlayType::OverlayDebug].color = {0xD0, 0xD0, 0x00, 0xFF};
+    m_Overlays[OverlayType::OverlayDebug].color = { 0x51, 0x52, 0xA5, 0xBC };
     m_Overlays[OverlayType::OverlayDebug].fontSize = 20;
 
     m_Overlays[OverlayType::OverlayStatusUpdate].color = {0xCC, 0x00, 0x00, 0xFF};
@@ -154,8 +155,8 @@ void OverlayManager::notifyOverlayUpdated(OverlayType type)
     }
 
     if (m_Overlays[type].enabled) {
-        // The _Wrapped variant is required for line breaks to work
-        SDL_Surface* surface = TTF_RenderText_Blended_Wrapped(m_Overlays[type].font,
+        // The _Wrapped variant is required for line breaks to work TTF_RenderText_Blended_Wrapped
+        SDL_Surface* surface = TTF_RenderUTF8_Blended_Wrapped(m_Overlays[type].font,
                                                               m_Overlays[type].text,
                                                               m_Overlays[type].color,
                                                               1024);

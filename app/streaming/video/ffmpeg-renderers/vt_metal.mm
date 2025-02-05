@@ -600,7 +600,8 @@ public:
                 }
                 else if (i == Overlay::OverlayDebug) {
                     // Top left
-                    renderRect.x = 0;
+                    // renderRect.x = 0;
+                    renderRect.x = (m_LastDrawableWidth-overlayTexture.width)/2;//居中显示
                     renderRect.y = m_LastDrawableHeight - overlayTexture.height;
                 }
 

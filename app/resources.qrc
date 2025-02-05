@@ -70,9 +70,6 @@
         <file>languages/qml_lt.qm</file>
         <file>languages/qml_et.ts</file>
         <file>languages/qml_et.qm</file>
-        <!-- Don't include pt_BR until it is more complete -->
-        <!--file>languages/qml_pt_BR.qm</file-->
-        <!--file>languages/qml_pt_BR.ts</file-->
     </qresource>
     <qresource prefix="/data">
         <file alias="gamecontrollerdb.txt">SDL_GameControllerDB/gamecontrollerdb.txt</file>
@@ -91,5 +88,6 @@
         <file alias="d3d11_ayuv_pixel.fxc">shaders/d3d11_ayuv_pixel.fxc</file>
         <file alias="d3d11_y410_pixel.fxc">shaders/d3d11_y410_pixel.fxc</file>
         <file alias="vt_renderer.metal">shaders/vt_renderer.metal</file>
+        <file>OPPOSans-H.ttf</file>
     </qresource>
 </RCC>
