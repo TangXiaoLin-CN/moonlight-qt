@@ -131,7 +131,8 @@ private:
         KeyComboToggleMinimize,
         KeyComboPasteText,
         KeyComboTogglePointerRegionLock,
-        KeyComboMax
+        KeyComboMax,
+        KeyComboToggleStatsOverlayLite,
     };
 
     GamepadState*

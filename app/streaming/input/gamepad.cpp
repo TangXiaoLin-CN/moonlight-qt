@@ -364,7 +364,8 @@ void SdlInputHandler::handleControllerButtonEvent(SDL_ControllerButtonEvent* eve
     }
 
     // Handle Start+Select+L1+R1 as a gamepad quit combo
-    if (state->buttons == (PLAY_FLAG | BACK_FLAG | LB_FLAG | RB_FLAG) && qgetenv("NO_GAMEPAD_QUIT") != "1") {
+    if ((state->buttons == (PLAY_FLAG | BACK_FLAG | LB_FLAG | RB_FLAG)&& qgetenv("NO_GAMEPAD_QUIT") != "1")||
+        (state->buttons == (SPECIAL_FLAG | X_FLAG)&& qgetenv("NO_GAMEPAD_QUIT") != "1")) {
         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
                     "Detected quit gamepad button combo");
 
@@ -381,13 +382,46 @@ void SdlInputHandler::handleControllerButtonEvent(SDL_ControllerButtonEvent* eve
     }
 
     // Handle Select+L1+R1+X as a gamepad overlay combo
-    if (state->buttons == (BACK_FLAG | LB_FLAG | RB_FLAG | X_FLAG)) {
+    if (state->buttons == (BACK_FLAG | LB_FLAG | RB_FLAG | X_FLAG) || (state->buttons == (SPECIAL_FLAG | Y_FLAG))) {
         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
                     "Detected stats toggle gamepad combo");
 
         // Toggle the stats overlay
         Session::get()->getOverlayManager().setOverlayState(Overlay::OverlayDebug,
                                                             !Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebug));
+
+        // Clear buttons down on this gamepad
+        LiSendMultiControllerEvent(state->index, m_GamepadMask,
+                                   0, 0, 0, 0, 0, 0, 0);
+        return;
+    }
+    //鼠标模式切换
+    if (state->buttons == (SPECIAL_FLAG | A_FLAG)) {
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "Detected mouse mode toggle combo");
+
+        // Uncapture input
+        setCaptureActive(false);
+
+        // Toggle mouse mode
+        m_AbsoluteMouseMode = !m_AbsoluteMouseMode;
+
+        // Recapture input
+        setCaptureActive(true);
+        // Clear buttons down on this gamepad
+        LiSendMultiControllerEvent(state->index, m_GamepadMask,
+                                   0, 0, 0, 0, 0, 0, 0);
+        return;
+    }
+
+    //性能信息切换
+    if (state->buttons == (SPECIAL_FLAG | B_FLAG)) {
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "switch overlay lite status");
+
+        // Toggle the stats overlay
+        Session::get()->getOverlayManager().setOverlayState(Overlay::OverlayDebugLite,
+                                                            !Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite));
 
         // Clear buttons down on this gamepad
         LiSendMultiControllerEvent(state->index, m_GamepadMask,

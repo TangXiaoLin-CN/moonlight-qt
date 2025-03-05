@@ -786,13 +786,24 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
 
     if (stats.receivedFps > 0) {
         if (m_VideoDecoderCtx != nullptr) {
-            ret = snprintf(&output[offset],
-                           length - offset,
-                           "视频流: %dx%d %.2f FPS (Codec: %s)  ",
-                           m_VideoDecoderCtx->width,
-                           m_VideoDecoderCtx->height,
-                           stats.totalFps,
-                           codecString);
+            if (Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+                ret = snprintf(&output[offset],
+                               length - offset,
+                               "\n  %dx%d %.2f FPS %s  ",
+                               m_VideoDecoderCtx->width,
+                               m_VideoDecoderCtx->height,
+                               stats.totalFps,
+                               codecString);
+            }else{
+                ret = snprintf(&output[offset],
+                               length - offset,
+                               "视频流: %dx%d %.2f FPS (Codec: %s)  ",
+                               m_VideoDecoderCtx->width,
+                               m_VideoDecoderCtx->height,
+                               stats.totalFps,
+                               codecString);
+            }
+
             if (ret < 0 || ret >= length - offset) {
                 SDL_assert(false);
                 return;
@@ -801,38 +812,43 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
             offset += ret;
         }
 
-        ret = snprintf(&output[offset],
-                       length - offset,
-                       // "Incoming frame rate from network: %.2f FPS\n"
-                       // "Decoding frame rate: %.2f FPS\n"
-                       // "Rendering frame rate: %.2f FPS\n",
-                       "帧率: 接收/解码/渲染 %.2f/%.2f/%.2f FPS\n",
-                       stats.receivedFps,
-                       stats.decodedFps,
-                       stats.renderedFps);
-        if (ret < 0 || ret >= length - offset) {
-            SDL_assert(false);
-            return;
+        if (!Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+            ret = snprintf(&output[offset],
+                           length - offset,
+                           // "Incoming frame rate from network: %.2f FPS\n"
+                           // "Decoding frame rate: %.2f FPS\n"
+                           // "Rendering frame rate: %.2f FPS\n",
+                           "帧率: 接收/解码/渲染 %.2f/%.2f/%.2f FPS\n",
+                           stats.receivedFps,
+                           stats.decodedFps,
+                           stats.renderedFps);
+            if (ret < 0 || ret >= length - offset) {
+                SDL_assert(false);
+                return;
+            }
+
+            offset += ret;
         }
 
-        offset += ret;
     }
+    if (!Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+        if (stats.framesWithHostProcessingLatency > 0) {
+            ret = snprintf(&output[offset],
+                           length - offset,
+                           // "Host processing latency min/max/average: %.1f/%.1f/%.1f ms\n",
+                           "主机编码: 最小 %.1f/最大 %.1f/平均 %.1f ms  ",
+                           (float)stats.minHostProcessingLatency / 10,
+                           (float)stats.maxHostProcessingLatency / 10,
+                           (float)stats.totalHostProcessingLatency / 10 / stats.framesWithHostProcessingLatency);
+            if (ret < 0 || ret >= length - offset) {
+                SDL_assert(false);
+                return;
+            }
 
-    if (stats.framesWithHostProcessingLatency > 0) {
-        ret = snprintf(&output[offset],
-                       length - offset,
-                       // "Host processing latency min/max/average: %.1f/%.1f/%.1f ms\n",
-                       "主机编码: 最小 %.1f/最大 %.1f/平均 %.1f ms  ",
-                       (float)stats.minHostProcessingLatency / 10,
-                       (float)stats.maxHostProcessingLatency / 10,
-                       (float)stats.totalHostProcessingLatency / 10 / stats.framesWithHostProcessingLatency);
-        if (ret < 0 || ret >= length - offset) {
-            SDL_assert(false);
-            return;
+            offset += ret;
         }
-
-        offset += ret;
     }
+
 
     if (stats.renderedFrames != 0) {
         char rttString[32];
@@ -844,22 +860,36 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
             snprintf(rttString, sizeof(rttString), "N/A");
         }
 
-        ret = snprintf(&output[offset],
-                       length - offset,
-                       // "Frames dropped by your network connection: %.2f%%\n"
-                       // "Frames dropped due to network jitter: %.2f%%\n"
-                       // "Average network latency: %s\n"
-                       // "Average decoding time: %.2f ms\n"
-                       // "Average frame queue delay: %.2f ms\n"
-                       // "Average rendering time (including monitor V-sync latency): %.2f ms\n",
-                       "网络延迟: %s  丢包率：%.2f%%  抖动：%.2f%%\n"
-                       "解码延迟：%.2f ms  帧队列延迟: %.2f ms  平均渲染时间 (含垂直同步): %.2f ms\n",
-                       rttString,
-                       (float)stats.networkDroppedFrames / stats.totalFrames * 100,
-                       (float)stats.pacerDroppedFrames / stats.decodedFrames * 100,
-                       (float)stats.totalDecodeTime / stats.decodedFrames,
-                       (float)stats.totalPacerTime / stats.renderedFrames,
-                       (float)stats.totalRenderTime / stats.renderedFrames);
+        if (Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+            ret = snprintf(&output[offset],
+                           length - offset,
+                           "网络: %s 丢包率：%.2f%% 抖动：%.2f%% "
+                           "解码：%.2f ms 帧队列: %.2f ms  \n",
+                           rttString,
+                           (float)stats.networkDroppedFrames / stats.totalFrames * 100,
+                           (float)stats.pacerDroppedFrames / stats.decodedFrames * 100,
+                           (float)stats.totalDecodeTime / stats.decodedFrames,
+                           (float)stats.totalPacerTime / stats.renderedFrames
+                           );
+        }else{
+            ret = snprintf(&output[offset],
+                           length - offset,
+                           // "Frames dropped by your network connection: %.2f%%\n"
+                           // "Frames dropped due to network jitter: %.2f%%\n"
+                           // "Average network latency: %s\n"
+                           // "Average decoding time: %.2f ms\n"
+                           // "Average frame queue delay: %.2f ms\n"
+                           // "Average rendering time (including monitor V-sync latency): %.2f ms\n",
+                           "网络延迟: %s  丢包率：%.2f%%  抖动：%.2f%%\n"
+                           "解码延迟：%.2f ms  帧队列延迟: %.2f ms  平均渲染时间 (含垂直同步): %.2f ms\n",
+                           rttString,
+                           (float)stats.networkDroppedFrames / stats.totalFrames * 100,
+                           (float)stats.pacerDroppedFrames / stats.decodedFrames * 100,
+                           (float)stats.totalDecodeTime / stats.decodedFrames,
+                           (float)stats.totalPacerTime / stats.renderedFrames,
+                           (float)stats.totalRenderTime / stats.renderedFrames);
+        }
+
         if (ret < 0 || ret >= length - offset) {
             SDL_assert(false);
             return;

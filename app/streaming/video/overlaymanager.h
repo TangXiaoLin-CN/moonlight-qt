@@ -10,7 +10,8 @@ namespace Overlay {
 enum OverlayType {
     OverlayDebug,
     OverlayStatusUpdate,
-    OverlayMax
+    OverlayMax,
+    OverlayDebugLite
 };
 
 class IOverlayRenderer
@@ -46,6 +47,7 @@ private:
         bool enabled;
         int fontSize;
         SDL_Color color;
+        SDL_Color bgcolor;
         char text[512];
 
         TTF_Font* font;

@@ -10,8 +10,9 @@ OverlayManager::OverlayManager() :
     memset(m_Overlays, 0, sizeof(m_Overlays));
 
     // m_Overlays[OverlayType::OverlayDebug].color = {0xD0, 0xD0, 0x00, 0xFF};
-    m_Overlays[OverlayType::OverlayDebug].color = { 0x51, 0x52, 0xA5, 0xBC };
-    m_Overlays[OverlayType::OverlayDebug].fontSize = 20;
+    m_Overlays[OverlayType::OverlayDebug].color = { 0xFF, 0xFF, 0xFF, 0xFF };
+    m_Overlays[OverlayType::OverlayDebug].fontSize = 22;
+    m_Overlays[OverlayType::OverlayDebug].bgcolor = { 0x00, 0x00, 0x00, 0x50 };
 
     m_Overlays[OverlayType::OverlayStatusUpdate].color = {0xCC, 0x00, 0x00, 0xFF};
     m_Overlays[OverlayType::OverlayStatusUpdate].fontSize = 36;
@@ -155,12 +156,23 @@ void OverlayManager::notifyOverlayUpdated(OverlayType type)
     }
 
     if (m_Overlays[type].enabled) {
+        TTF_SetFontWrappedAlign(m_Overlays[type].font, TTF_WRAPPED_ALIGN_CENTER);
         // The _Wrapped variant is required for line breaks to work TTF_RenderText_Blended_Wrapped
-        SDL_Surface* surface = TTF_RenderUTF8_Blended_Wrapped(m_Overlays[type].font,
-                                                              m_Overlays[type].text,
-                                                              m_Overlays[type].color,
-                                                              1024);
-        SDL_AtomicSetPtr((void**)&m_Overlays[type].surface, surface);
+        if(isOverlayEnabled(Overlay::OverlayDebugLite)){
+            SDL_Surface* surface = TTF_RenderUTF8_LCD(m_Overlays[type].font,
+                                                      m_Overlays[type].text,
+                                                      m_Overlays[type].color,
+                                                      m_Overlays[type].bgcolor);
+            SDL_AtomicSetPtr((void**)&m_Overlays[type].surface, surface);
+        }else{
+            SDL_Surface* surface = TTF_RenderUTF8_LCD_Wrapped(m_Overlays[type].font,
+                                                      m_Overlays[type].text,
+                                                      m_Overlays[type].color,
+                                                      m_Overlays[type].bgcolor,
+                                                      1224);
+            SDL_AtomicSetPtr((void**)&m_Overlays[type].surface, surface);
+        }
+
     }
 
     // Notify the renderer
