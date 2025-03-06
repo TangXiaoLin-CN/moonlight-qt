@@ -420,8 +420,8 @@ void SdlInputHandler::handleControllerButtonEvent(SDL_ControllerButtonEvent* eve
                     "switch overlay lite status");
 
         // Toggle the stats overlay
-        Session::get()->getOverlayManager().setOverlayState(Overlay::OverlayDebugLite,
-                                                            !Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite));
+        Session::get()->getOverlayManager().setOverlayStateLite(Overlay::OverlayDebug,
+                                                            !Session::get()->getOverlayManager().isOverlayLite(Overlay::OverlayDebug));
 
         // Clear buttons down on this gamepad
         LiSendMultiControllerEvent(state->index, m_GamepadMask,

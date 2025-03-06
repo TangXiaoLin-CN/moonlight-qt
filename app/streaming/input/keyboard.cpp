@@ -63,8 +63,8 @@ void SdlInputHandler::performSpecialKeyCombo(KeyCombo combo)
                     "switch overlay lite status");
 
         // Toggle the stats overlay
-        Session::get()->getOverlayManager().setOverlayState(Overlay::OverlayDebugLite,
-                                                            !Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite));
+        Session::get()->getOverlayManager().setOverlayStateLite(Overlay::OverlayDebug,
+                                                            !Session::get()->getOverlayManager().isOverlayLite(Overlay::OverlayDebug));
         break;
 
     case KeyComboToggleMouseMode:

@@ -1701,6 +1701,23 @@ Flickable {
                                   qsTr("You can toggle it at any time while streaming using Ctrl+Alt+Shift+S or Select+L1+R1+X.") + "\n\n" +
                                   qsTr("The performance overlay is not supported on Steam Link or Raspberry Pi.")
                 }
+
+                CheckBox {
+                    id: showPerformanceOverlayLite
+                    width: parent.width
+                    text: qsTr("展示精简性能信息")
+                    font.pointSize: 12
+                    checked: StreamingPreferences.showPerformanceOverlayLite
+                    onCheckedChanged: {
+                        StreamingPreferences.showPerformanceOverlayLite = checked
+                    }
+
+                    ToolTip.delay: 1000
+                    ToolTip.timeout: 5000
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("在串流过程中显示精简性能信息") + "\n\n" +
+                                  qsTr("你可以使用快捷键Ctrl+Alt+Shift+A or Xbox+B切换完整与精简性能信息显示")
+                }
             }
         }
     }

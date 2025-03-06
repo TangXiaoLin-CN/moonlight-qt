@@ -10,8 +10,7 @@ namespace Overlay {
 enum OverlayType {
     OverlayDebug,
     OverlayStatusUpdate,
-    OverlayMax,
-    OverlayDebugLite
+    OverlayMax
 };
 
 class IOverlayRenderer
@@ -29,11 +28,13 @@ public:
     ~OverlayManager();
 
     bool isOverlayEnabled(OverlayType type);
+    bool isOverlayLite(OverlayType type);
     char* getOverlayText(OverlayType type);
     void updateOverlayText(OverlayType type, const char* text);
     int getOverlayMaxTextLength();
     void setOverlayTextUpdated(OverlayType type);
     void setOverlayState(OverlayType type, bool enabled);
+    void setOverlayStateLite(OverlayType type, bool enabled);
     SDL_Color getOverlayColor(OverlayType type);
     int getOverlayFontSize(OverlayType type);
     SDL_Surface* getUpdatedOverlaySurface(OverlayType type);
@@ -48,6 +49,7 @@ private:
         int fontSize;
         SDL_Color color;
         SDL_Color bgcolor;
+        bool enabledLite;
         char text[512];
 
         TTF_Font* font;

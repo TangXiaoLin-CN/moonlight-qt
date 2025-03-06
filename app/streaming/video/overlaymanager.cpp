@@ -110,6 +110,15 @@ void OverlayManager::setOverlayState(OverlayType type, bool enabled)
     }
 }
 
+void OverlayManager::setOverlayStateLite(OverlayType type, bool enabled){
+    m_Overlays[type].enabledLite = enabled;
+}
+
+bool OverlayManager::isOverlayLite(OverlayType type)
+{
+    return m_Overlays[type].enabledLite;
+}
+
 SDL_Color OverlayManager::getOverlayColor(OverlayType type)
 {
     return m_Overlays[type].color;
@@ -158,7 +167,7 @@ void OverlayManager::notifyOverlayUpdated(OverlayType type)
     if (m_Overlays[type].enabled) {
         TTF_SetFontWrappedAlign(m_Overlays[type].font, TTF_WRAPPED_ALIGN_CENTER);
         // The _Wrapped variant is required for line breaks to work TTF_RenderText_Blended_Wrapped
-        if(isOverlayEnabled(Overlay::OverlayDebugLite)){
+        if(type==Overlay::OverlayDebug&&m_Overlays[type].enabledLite){
             SDL_Surface* surface = TTF_RenderUTF8_LCD(m_Overlays[type].font,
                                                       m_Overlays[type].text,
                                                       m_Overlays[type].color,
@@ -172,7 +181,6 @@ void OverlayManager::notifyOverlayUpdated(OverlayType type)
                                                       1224);
             SDL_AtomicSetPtr((void**)&m_Overlays[type].surface, surface);
         }
-
     }
 
     // Notify the renderer

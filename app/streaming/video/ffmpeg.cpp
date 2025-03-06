@@ -823,7 +823,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
 
     if (stats.receivedFps > 0) {
         if (m_VideoDecoderCtx != nullptr) {
-            if (Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+            if (Session::get()->getOverlayManager().isOverlayLite(Overlay::OverlayDebug)){
                 ret = snprintf(&output[offset],
                                length - offset,
                                "\n  %dx%d %.2f FPS %s  ",
@@ -849,7 +849,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
             offset += ret;
         }
 
-        if (!Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+        if (!Session::get()->getOverlayManager().isOverlayLite(Overlay::OverlayDebug)){
             ret = snprintf(&output[offset],
                            length - offset,
                            // "Incoming frame rate from network: %.2f FPS\n"
@@ -868,7 +868,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
         }
 
     }
-    if (!Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+    if (!Session::get()->getOverlayManager().isOverlayLite(Overlay::OverlayDebug)){
         if (stats.framesWithHostProcessingLatency > 0) {
             ret = snprintf(&output[offset],
                            length - offset,
@@ -897,7 +897,7 @@ void FFmpegVideoDecoder::stringifyVideoStats(VIDEO_STATS& stats, char* output, i
             snprintf(rttString, sizeof(rttString), "N/A");
         }
 
-        if (Session::get()->getOverlayManager().isOverlayEnabled(Overlay::OverlayDebugLite)){
+        if (Session::get()->getOverlayManager().isOverlayLite(Overlay::OverlayDebug)){
             ret = snprintf(&output[offset],
                            length - offset,
                            "网络: %s 丢包率：%.2f%% 抖动：%.2f%% "
