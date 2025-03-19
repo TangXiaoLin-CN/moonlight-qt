@@ -243,8 +243,16 @@ void SdlRenderer::renderOverlay(Overlay::OverlayType type)
             }
             else if (type == Overlay::OverlayDebug) {
                 // Top left
-                m_OverlayRects[type].x = 0;
-                m_OverlayRects[type].y = 0;
+                // m_OverlayRects[type].x = 0;
+                // m_OverlayRects[type].y = 0;
+
+                // 获取当前视口尺寸
+                SDL_Rect viewportRect;
+                SDL_RenderGetViewport(m_Renderer, &viewportRect);
+
+                // 计算水平居中的 x 坐标
+                m_OverlayRects[type].x = (viewportRect.w - newSurface->w) / 2;
+                m_OverlayRects[type].y = 0; // 顶部
             }
 
             m_OverlayRects[type].w = newSurface->w;

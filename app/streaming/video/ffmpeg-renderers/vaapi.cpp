@@ -723,8 +723,10 @@ void VAAPIRenderer::notifyOverlayUpdated(Overlay::OverlayType type)
         }
         else if (type == Overlay::OverlayDebug) {
             // Top left
-            overlayRect.x = 0;
-            overlayRect.y = 0;
+            // overlayRect.x = 0;
+            // overlayRect.y = 0;
+            overlayRect.x = newSurface->w / 2;  // 使用 SDL 视口宽度
+            overlayRect.y = 0;  // 贴紧顶部
         }
 
         overlayRect.w = newSurface->w;

@@ -438,7 +438,8 @@ void VDPAURenderer::notifyOverlayUpdated(Overlay::OverlayType type)
         }
         else if (type == Overlay::OverlayDebug) {
             // Top left
-            overlayRect.x0 = 0;
+            // overlayRect.x0 = 0;
+            overlayRect.x0 = (m_DisplayWidth - newSurface->w)/2;
             overlayRect.y0 = 0;
         }
 
